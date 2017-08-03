@@ -1,6 +1,6 @@
 {
   "name": "saturn-app-theme-worona",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Saturn theme for worona apps.",
   "scripts": {
     "start": "node node_modules/worona-packages/dist/start.js"
@@ -51,7 +51,7 @@
     "eslint-plugin-react": "^6.3.0",
     "vendors-app-worona": "1.4.3",
     "vendors-dashboard-worona": "1.4.0",
-    "worona-packages": "1.4.0"
+    "worona-packages": "1.4.1"
   },
   "bugs": {
     "url": "https://github.com/worona/saturn-app-theme-worona/issues"
