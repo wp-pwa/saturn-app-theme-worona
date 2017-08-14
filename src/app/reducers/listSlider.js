@@ -3,7 +3,7 @@ import * as types from '../types';
 
 const temp = (state = { activeSlide: 0 }, action) => {
   switch (action.type) {
-    case types.ACTIVE_POST_SLIDE_CHANGE_STARTED:
+    case types.ACTIVE_LIST_SLIDE_CHANGE_STARTED:
       return {
         activeSlide: action.activeSlide,
       };
@@ -14,7 +14,7 @@ const temp = (state = { activeSlide: 0 }, action) => {
 
 const final = (state = { activeSlide: 0, sliderAnimation: null }, action) => {
   switch (action.type) {
-    case types.ACTIVE_POST_SLIDE_CHANGE_FINISHED:
+    case types.ACTIVE_LIST_SLIDE_CHANGE_FINISHED:
       return {
         activeSlide: action.activeSlide,
         sliderAnimation: action.sliderAnimation,
@@ -24,17 +24,6 @@ const final = (state = { activeSlide: 0, sliderAnimation: null }, action) => {
   }
 };
 
-const hiddenBars = (state = false, action) => {
-  switch (action.type) {
-    case types.BARS_HAVE_HIDDEN:
-      return true;
-    case types.BARS_HAVE_SHOWN:
-      return false;
-    default:
-      return state;
-  }
-};
+const listSlider = combineReducers({ temp, final });
 
-const postSlider = combineReducers({ temp, final, hiddenBars });
-
-export default postSlider;
+export default listSlider;
