@@ -67,6 +67,7 @@ class Post extends Component {
               activeSlide: tempActiveSlide,
               sliderAnimation: animation,
               sliderLength: postList.length,
+              postId: postList[tempActiveSlide]
             });
           }}
         >

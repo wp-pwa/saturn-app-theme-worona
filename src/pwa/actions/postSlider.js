@@ -19,11 +19,17 @@ export const activePostSlideChangeStarted = ({ activeSlide }) => ({
   activeSlide,
 });
 
-export const activePostSlideChangeFinished = ({ activeSlide, sliderAnimation, sliderLength }) => ({
+export const activePostSlideChangeFinished = ({
+  activeSlide,
+  sliderAnimation,
+  sliderLength,
+  postId,
+}) => ({
   type: ACTIVE_POST_SLIDE_CHANGE_FINISHED,
   activeSlide,
   sliderAnimation,
   sliderLength,
+  postId,
 });
 
 export const postHasScrolled = ({ direction }) => ({
