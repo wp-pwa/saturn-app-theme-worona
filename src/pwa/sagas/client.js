@@ -11,7 +11,7 @@ export default function* saturnSagas() {
     fork(shareModalSagas),
     fork(postSagas),
     fork(menuSagas),
-    fork(navSagas)
+    fork(navSagas),
     fork(analyticsSagas),
     // fork(cookiesHaveBeenRequested),
   ]);
