@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled, { ThemeProvider, injectGlobal } from 'styled-components';
+import { Transition } from 'react-transition-group';
 import dynamic from '@worona/next/dynamic';
 import Head from '@worona/next/head';
 import { dep } from 'worona-deps';
@@ -35,6 +36,20 @@ const DynamicList = dynamic(import('../List'));
 const DynamicPost = dynamic(import('../Post'));
 const DynamicPage = dynamic(import('../Page'));
 
+const duration = 300;
+
+const defaultStyle = {
+  transition: `opacity ${duration}ms ease-in-out`,
+  opacity: 0,
+};
+
+const transitionStyles = {
+  entering: { opacity: 1, display: 'block' },
+  entered: { opacity: 1 },
+  exiting: { opacity: 0 },
+  exited: { opacity: 0, display: 'none' },
+};
+
 class Theme extends Component {
   constructor(props) {
     super(props);
@@ -55,12 +70,12 @@ class Theme extends Component {
       postGrey: '#AAA',
       postDark: '#333',
       shareBarHeight: '56px',
-      shareBarButtonSize: '40px'
+      shareBarButtonSize: '40px',
     };
   }
 
   render = () => {
-    const { type } = this.props;
+    const { type, currentList, currentSingle } = this.props;
 
     return (
       <ThemeProvider theme={this.theme}>
@@ -71,9 +86,34 @@ class Theme extends Component {
           </Head>
           <Header />
           <Menu />
-          {['latest', 'category', 'tag', 'author'].includes(type) && <DynamicList />}
-          {type === 'page' && <DynamicPage />}
-          {type === 'post' && <DynamicPost />}
+          {currentList &&
+            <Transition
+              in={['latest', 'category', 'tag', 'author'].includes(type)}
+              timeout={duration}
+            >
+              {state =>
+                <div
+                  style={{
+                    ...defaultStyle,
+                    ...transitionStyles[state],
+                  }}
+                >
+                  <DynamicList />
+                </div>}
+            </Transition>}
+          {currentSingle &&
+            <Transition in={type === 'post' || type === 'page'} timeout={duration}>
+                {state =>
+                  <div
+                    style={{
+                      ...defaultStyle,
+                      ...transitionStyles[state],
+                    }}
+                  >
+                    { type === 'post' ? <DynamicPost /> : <DynamicPage /> }
+                  </div>}
+              </Transition>
+            }
           <Share />
           {type === 'post' && <ShareBar />}
         </Container>
@@ -84,12 +124,16 @@ class Theme extends Component {
 
 Theme.propTypes = {
   mainColor: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
+  currentList: PropTypes.bool.isRequired,
+  currentSingle: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => ({
   mainColor: dep('settings', 'selectorCreators', 'getSetting')('theme', 'mainColor')(state),
-  type: dep('router', 'selectors', 'getType')(state)
+  type: dep('router', 'selectors', 'getType')(state),
+  currentList: !!state.connection.names.currentList,
+  currentSingle: !!state.connection.names.currentSingle,
 });
 
 export default connect(mapStateToProps)(Theme);
