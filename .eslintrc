@@ -2,6 +2,7 @@
   "parser": "babel-eslint",
   "extends": ["airbnb", "prettier", "prettier/react"],
   "rules": {
+    "react/no-unused-prop-types": [2, {"skipShapeProps": true}],
     "import/no-extraneous-dependencies": 0,
     "import/no-unresolved": 0,
     "import/extensions": 0,

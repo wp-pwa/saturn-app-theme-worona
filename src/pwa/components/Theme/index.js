@@ -1,4 +1,4 @@
-/* eslint-disable react/no-danger */
+/* eslint-disable react/no-danger, no-nested-ternary */
 /* global window */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -36,18 +36,13 @@ const DynamicList = dynamic(import('../List'));
 const DynamicPost = dynamic(import('../Post'));
 const DynamicPage = dynamic(import('../Page'));
 
-const duration = 300;
+const duration = 0;
 
-const defaultStyle = {
-  transition: `opacity ${duration}ms ease-in-out`,
-  opacity: 0,
-};
+const defaultStyle = { display: 'block' };
 
 const transitionStyles = {
-  entering: { opacity: 1, display: 'block' },
-  entered: { opacity: 1 },
-  exiting: { opacity: 0 },
-  exited: { opacity: 0, display: 'none' },
+  entered: { display: 'block' },
+  exited: { display: 'none' },
 };
 
 class Theme extends Component {
@@ -90,6 +85,8 @@ class Theme extends Component {
             <Transition
               in={['latest', 'category', 'tag', 'author'].includes(type)}
               timeout={duration}
+              enter={false}
+              exit={false}
             >
               {state =>
                 <div
@@ -102,18 +99,23 @@ class Theme extends Component {
                 </div>}
             </Transition>}
           {currentSingle &&
-            <Transition in={type === 'post' || type === 'page'} timeout={duration}>
-                {state =>
-                  <div
-                    style={{
-                      ...defaultStyle,
-                      ...transitionStyles[state],
-                    }}
-                  >
-                    { type === 'post' ? <DynamicPost /> : <DynamicPage /> }
-                  </div>}
-              </Transition>
-            }
+            <Transition
+              in={type === 'post' || type === 'page'}
+              timeout={duration}
+              enter={false}
+              exit={false}
+            >
+              {state =>
+                <div
+                  style={{
+                    ...defaultStyle,
+                    ...transitionStyles[state],
+                  }}
+                >
+                  {currentSingle.wpType === 'posts' && <DynamicPost />}
+                  {currentSingle.wpType === 'pages' && <DynamicPage />}
+                </div>}
+            </Transition>}
           <Share />
           {type === 'post' && <ShareBar />}
         </Container>
@@ -126,14 +128,16 @@ Theme.propTypes = {
   mainColor: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   currentList: PropTypes.bool.isRequired,
-  currentSingle: PropTypes.bool.isRequired,
+  currentSingle: PropTypes.shape({
+    wpType: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({
   mainColor: dep('settings', 'selectorCreators', 'getSetting')('theme', 'mainColor')(state),
   type: dep('router', 'selectors', 'getType')(state),
   currentList: !!state.connection.names.currentList,
-  currentSingle: !!state.connection.names.currentSingle,
+  currentSingle: state.connection.names.currentSingle,
 });
 
 export default connect(mapStateToProps)(Theme);
