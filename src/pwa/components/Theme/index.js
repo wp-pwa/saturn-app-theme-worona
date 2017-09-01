@@ -130,7 +130,7 @@ Theme.propTypes = {
   currentList: PropTypes.bool.isRequired,
   currentSingle: PropTypes.shape({
     wpType: PropTypes.string.isRequired,
-  }).isRequired,
+  }),
 };
 
 const mapStateToProps = state => ({
