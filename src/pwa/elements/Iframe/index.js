@@ -51,13 +51,14 @@ class Iframe extends Component {
   }
 
   render() {
-    const { title, width, height } = this.props;
+    const { title, width, height, sandbox } = this.props;
     return (
       <Container>
         <iframe
           title={title}
           width={width}
           height={height}
+          sandbox={sandbox}
           src="about:blank"
           ref={iframe => {this.iframe = iframe}}
         />
@@ -70,10 +71,12 @@ Iframe.propTypes = {
   title: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  sandbox: PropTypes.string,
   children: PropTypes.shape({}),
 };
 
 Iframe.defaultProps = {
+  sandbox: undefined,
   children: {},
 };
 
