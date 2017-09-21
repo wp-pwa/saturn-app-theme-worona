@@ -6,34 +6,11 @@ import styled from 'styled-components';
 import Transition from 'react-transition-group/Transition';
 import * as selectors from '../../selectors';
 import LoadUnload from '../LoadUnload';
-
-let firstAd = true;
-
-const create = args => {
-  const sas = window && window.sas ? window.sas : {};
-
-  const callParams = { ...args, async: true };
-  const { tagId } = args;
-  const containerExists = window.document.getElementById(tagId) !== null;
-
-  sas.cmd = sas.cmd || [];
-
-  if (firstAd) {
-    firstAd = false;
-    sas.cmd.push(() => {
-      sas.setup({ networkid: 620, domain: '//www5.smartadserver.com', async: true });
-    });
-  }
-
-  sas.cmd.push(() => {
-    if (containerExists) sas.call('iframe', callParams);
-  });
-};
+import Iframe from '../Iframe';
 
 const randomBetween = (min, max) => (Math.random() * (max - min)) + min; // prettier-ignore
 
 const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlide }) => {
-  const tagId = `ad${formatId}${slide || ''}`;
   const exit = randomBetween(2000, 6000);
 
   return (
@@ -50,20 +27,33 @@ const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlid
         {status => {
           if (status === 'entered' || status === 'exiting') {
             return (
-              <StyledLoadUnload
-                once
-                width={width}
-                height={height}
-                topOffset={-2000}
-                bottomOffset={-2000}
-                onEnter={() => {
-                  setTimeout(() => {
-                    create({ siteId, pageId, formatId, target, width, height, tagId });
-                  });
-                }}
-              >
-                <InnerContainer id={tagId} width={width} height={height} />
-              </StyledLoadUnload>
+              <Iframe title={'adIframe'} width={width} height={height}>
+                <head>
+                  <style>{'html,body{margin:0;padding:0;overflow:hidden;}'}</style>
+                  <script src="//ced.sascdn.com/tag/2506/smart.js" type="text/javascript" async />
+                  <script>{`
+                    var sas = sas || {};
+                    sas.cmd = sas.cmd || [];
+                    sas.cmd.push(function setupAds() {
+                      sas.setup({ networkid: 2506, domain: "//www8.smartadserver.com", async: true });
+                    });
+                    sas.cmd.push(function getAd() {
+                      sas.call('onecall', {
+                        siteId: ${siteId},
+                        pageId: ${pageId},
+                        formatId: ${formatId},
+                        target: '${target}'
+                      });
+                    });
+                    sas.cmd.push(function renderAd() {
+                      sas.render('${formatId}');
+                    });
+                  `}</script>
+                </head>
+                <body>
+                  <div id={`sas_${formatId}`} />
+                </body>
+              </Iframe>
             );
           }
           return null;
