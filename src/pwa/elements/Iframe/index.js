@@ -1,49 +1,18 @@
-/* global document */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-
-const createNode = reactElement => {
-  const { type } = reactElement;
-  const { children, ...otherProps } = reactElement.props;
-  const node = document.createElement(type);
-  for (const prop in otherProps) { // eslint-disable-line
-    node[prop] = otherProps[prop];
-  }
-  node.innerHTML = children || '';
-  return node;
-}
-
-const appendChildren = (parent, name, base) => {
-  if (!(parent && base && ['head', 'body'].includes(name))) return;
-
-  let filtered;
-
-  if (base instanceof Array) {
-    filtered = base.filter(child => child.type === name)[0];
-  } else if (base instanceof Object) {
-    filtered = base.type === name && base;
-  }
-
-  if (!filtered) return;
-
-  const children = filtered.props.children;
-  if (children instanceof Array) {
-    children.forEach(child => parent.appendChild(createNode(child)));
-  } else {
-    parent.appendChild(createNode(children));
-  }
-}
-
 class Iframe extends Component {
   componentDidMount() {
-    const { head, body } = this.iframe.contentDocument;
     const { children } = this.props;
 
-    if(!children) return;
-    appendChildren(head, 'head', children);
-    appendChildren(body, 'body', children);
+    if (!children) return;
+
+    this.iframe.setAttribute('src', '/');
+    this.iframe.contentWindow.stop();
+    this.iframe.contentWindow.document.open('text/html', 'replace');
+    this.iframe.contentWindow.document.write(children);
+    this.iframe.contentWindow.document.close();
   }
 
   shouldComponentUpdate() {
@@ -51,16 +20,16 @@ class Iframe extends Component {
   }
 
   render() {
-    const { title, width, height, sandbox } = this.props;
+    const { title, width, height } = this.props;
     return (
       <Container>
         <iframe
           title={title}
           width={width}
           height={height}
-          sandbox={sandbox}
-          src="about:blank"
-          ref={iframe => {this.iframe = iframe}}
+          ref={iframe => {
+            this.iframe = iframe;
+          }}
         />
       </Container>
     );
@@ -71,13 +40,11 @@ Iframe.propTypes = {
   title: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  sandbox: PropTypes.string,
-  children: PropTypes.shape({}),
+  children: PropTypes.string,
 };
 
 Iframe.defaultProps = {
-  sandbox: undefined,
-  children: {},
+  children: '',
 };
 
 export default Iframe;

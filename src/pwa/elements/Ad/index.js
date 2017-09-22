@@ -27,11 +27,11 @@ const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlid
         {status => {
           if (status === 'entered' || status === 'exiting') {
             return (
-              <Iframe title={'adIframe'} width={width} height={height}>
+              <Iframe title={'adIframe'} width={width} height={height}>{`
                 <head>
-                  <style>{'html,body{margin:0;padding:0;overflow:hidden;}'}</style>
-                  <script src="//ced.sascdn.com/tag/2506/smart.js" type="text/javascript" async />
-                  <script>{`
+                  <style>html,body{margin:0;padding:0;overflow:hidden;}</style>
+                  <script src="//ced.sascdn.com/tag/2506/smart.js" type="text/javascript" async></script>
+                  <script>
                     var sas = sas || {};
                     sas.cmd = sas.cmd || [];
                     sas.cmd.push(function setupAds() {
@@ -48,11 +48,12 @@ const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlid
                     sas.cmd.push(function renderAd() {
                       sas.render('${formatId}');
                     });
-                  `}</script>
+                  </script>
                 </head>
                 <body>
-                  <div id={`sas_${formatId}`} />
+                  <div id=sas_${formatId}></div>
                 </body>
+              `}
               </Iframe>
             );
           }
