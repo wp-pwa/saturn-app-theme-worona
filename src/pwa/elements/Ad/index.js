@@ -27,26 +27,32 @@ const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlid
         {status => {
           if (status === 'entered' || status === 'exiting') {
             return (
-              <Iframe title={'adIframe'} width={width} height={height}>{`
+              <Iframe
+                title={'adIframe'}
+                width={width}
+                height={height}
+                sandbox={'allow-scripts allow-forms allow-pointer-lock allow-popups allow-same'}
+              >
+                {`
                 <head>
                   <style>html,body{margin:0;padding:0;overflow:hidden;}</style>
                   <script src="//ced.sascdn.com/tag/2506/smart.js" type="text/javascript" async></script>
                   <script>
-                    var sas = sas || {};
-                    sas.cmd = sas.cmd || [];
-                    sas.cmd.push(function setupAds() {
-                      sas.setup({ networkid: 2506, domain: "//www8.smartadserver.com", async: true });
+                    window.sas = window.sas || {};
+                    window.sas.cmd = window.sas.cmd || [];
+                    window.sas.cmd.push(function setupAds() {
+                      window.sas.setup({ networkid: 2506, domain: "//www8.smartadserver.com", async: true });
                     });
-                    sas.cmd.push(function getAd() {
-                      sas.call('onecall', {
+                    window.sas.cmd.push(function getAd() {
+                      window.sas.call('onecall', {
                         siteId: ${siteId},
                         pageId: ${pageId},
                         formatId: ${formatId},
                         target: '${target}'
                       });
                     });
-                    sas.cmd.push(function renderAd() {
-                      sas.render('${formatId}');
+                    window.sas.cmd.push(function renderAd() {
+                      window.sas.render('${formatId}');
                     });
                   </script>
                 </head>
