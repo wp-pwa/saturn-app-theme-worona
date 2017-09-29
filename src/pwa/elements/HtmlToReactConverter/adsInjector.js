@@ -25,10 +25,12 @@ const insertAfter = (newChild, refChild, children) => {
   children.splice(children.indexOf(refChild) + 1, 0, newChild);
 };
 
-const insertionPoints = htmlTree => {
+
+
+const insertionPoints = elements => {
   const points = [];
-  const valueInsertions = (element, initialSum = 0) => {
-    let sum = initialSum;
+
+  const getElementValue = element => {
     if (element.type === 'Text') {
       return he.decode(element.content.replace(/\s/g, '')).length;
     } else if (element.tagName === 'img' || element.tagName === 'iframe') {
@@ -37,24 +39,27 @@ const insertionPoints = htmlTree => {
       return BLOCKQUOTE_VALUE;
     } else if (element.tagName === 'li') {
       return LI_VALUE;
-    } else if (element.children && element.children.length > 0) {
-      for (const child of element.children) {
-        let value = valueInsertions(child);
-        sum += value;
-        if (validElements.includes(child.tagName)) {
-          if (value < MIN_LENGTH) {
-            const whastePoint = points.pop();
-            value += whastePoint ? whastePoint.value : 0;
-          }
-          points.push({ parent: element, child, value });
-        }
-      }
     }
-    return sum;
-  };
+    return 0;
+  }
 
-  htmlTree.reduce((sum, child) => { console.log(sum); return valueInsertions(child, sum); }, 0);
+  const valueInsertions = (parent, children) => children.reduce((sum, element) => {
+    let value = getElementValue(element) || valueInsertions(element, element.children);
 
+    if (validElements.includes(element.tagName)) {
+      // If the value for element is too short to be considered a different insertion point,
+      // the previous insertion point is removed and a new one is created.
+      if (value < MIN_LENGTH) {
+        const whastePoint = points.pop();
+        value += whastePoint ? whastePoint.value : 0;
+      }
+      points.push({ parent, element, value });
+    }
+
+    return sum + value;
+  }, 0);
+
+  valueInsertions({ children: elements }, elements);
   return points;
 };
 
