@@ -25,11 +25,10 @@ const insertAfter = (newChild, refChild, children) => {
   children.splice(children.indexOf(refChild) + 1, 0, newChild);
 };
 
-const insertionPoints = htmlRoot => {
+const insertionPoints = htmlTree => {
   const points = [];
-  const valueInsertions = element => {
-    let sum = 0;
-
+  const valueInsertions = (element, initialSum = 0) => {
+    let sum = initialSum;
     if (element.type === 'Text') {
       return he.decode(element.content.replace(/\s/g, '')).length;
     } else if (element.tagName === 'img' || element.tagName === 'iframe') {
@@ -53,29 +52,26 @@ const insertionPoints = htmlRoot => {
     }
     return sum;
   };
-  valueInsertions(htmlRoot);
+
+  htmlTree.reduce((sum, child) => { console.log(sum); return valueInsertions(child, sum); }, 0);
+
   return points;
 };
 
 export default function adsInjector(htmlTree, adsConfig) {
   const { atTheBeginning, atTheEnd, adList } = adsConfig;
 
-  let htmlRoot;
-  if (htmlTree.length > 1) {
-    htmlRoot = { children: htmlTree };
-  } else {
-    htmlRoot = htmlTree[0];
-  }
+  // htmlTree is always an array.
 
   let sum = !atTheBeginning ? OFFSET : 0;
   let index = 0;
+  let points = insertionPoints(htmlTree);
 
-  let points = insertionPoints(htmlRoot);
   const totalValue = points.reduce((last, point) => last + point.value, 0);
   const limitValue = Math.max(MIN_LIMIT_VALUE, Math.floor(totalValue / adList.length));
 
   if (atTheBeginning) {
-    htmlRoot.children.unshift({ ...AD_ELEMENT, attributes: adList[index] || {} });
+    htmlTree.unshift({ ...AD_ELEMENT, attributes: adList[index] || {} });
     index += 1;
   }
 
