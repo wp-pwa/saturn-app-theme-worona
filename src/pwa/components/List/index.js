@@ -34,9 +34,9 @@ class List extends Component {
 
     if (adList.length > 0) {
       const currentIndex = index - firstAdPosition;
-      const validIndex = currentIndex % postsBeforeAd === 0
+      const validIndex = currentIndex >= 0 && currentIndex % postsBeforeAd === 0;
       if (validIndex) {
-        adConfig = adList[Math.floor((index + firstAdPosition) / postsBeforeAd)];
+        adConfig = adList[Math.floor((index - firstAdPosition) / postsBeforeAd)];
       }
     }
 
