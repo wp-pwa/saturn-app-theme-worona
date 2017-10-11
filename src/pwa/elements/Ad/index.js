@@ -7,35 +7,21 @@ import Transition from 'react-transition-group/Transition';
 import * as selectors from '../../selectors';
 import LoadUnload from '../LoadUnload';
 
-let firstAd = true;
+import smartads from './smartads';
+import adsense from './adsense';
 
-const create = args => {
-  const sas = window && window.sas ? window.sas : {};
-
-  const callParams = { ...args, async: true };
-  const { tagId } = args;
-
-  sas.cmd = sas.cmd || [];
-
-  if (firstAd) {
-    firstAd = false;
-    sas.cmd.push(() => {
-      sas.setup({ networkid: 2506, domain: '//www8.smartadserver.com', async: true });
-    });
-  }
-
-  sas.cmd.push(() => {
-    const containerExists = window.document.getElementById(tagId) !== null;
-    if (containerExists) sas.call('iframe', callParams);
-  });
-};
+const adSystems = {
+  smartads,
+  adsense,
+}
 
 const randomBetween = (min, max) => (Math.random() * (max - min)) + min; // prettier-ignore
 
-const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlide }) => {
-  const tagId = `ad${formatId}${slide || ''}`;
+const Ad = ({ type = 'smartads', width, height, slide, activeSlide, ...params }) => {
   const exit = randomBetween(2000, 6000);
-
+  const { formatId, adUnitPath } = params;
+  const tagId = `ad${formatId || adUnitPath}${slide !== undefined ? slide : ''}`;
+  let remover;
   return (
     <Container width={width} height={height}>
       <IconContainer>
@@ -46,6 +32,7 @@ const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlid
         timeout={{ exit }}
         unmountOnExit
         enter={false}
+        onExiting={() => remover && remover()}
       >
         {status => {
           if (status === 'entered' || status === 'exiting') {
@@ -58,7 +45,7 @@ const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlid
                 bottomOffset={-2000}
                 onEnter={() => {
                   setTimeout(() => {
-                    create({ siteId, pageId, formatId, target, width, height, tagId });
+                    remover = adSystems[type].create({ ...params, width, height, tagId });
                   });
                 }}
               >
