@@ -12,6 +12,7 @@ import '../styles';
 import { blackOrWhite } from '../../libs';
 import Header from '../Header';
 import Menu from '../Menu';
+import AmpMenu from '../Amp/Menu';
 import Share from '../Share';
 import Cookies from '../Cookies';
 
@@ -34,6 +35,7 @@ const loading = () => null;
 const DynamicList = dynamic(import('../List'), { loading });
 const DynamicPost = dynamic(import('../Post'), { loading });
 const DynamicPage = dynamic(import('../Page'), { loading });
+const DynamicAmpPost = dynamic(import('../Amp/Post'), { loading });
 
 class Theme extends Component {
   constructor(props) {
@@ -62,7 +64,7 @@ class Theme extends Component {
   }
 
   render() {
-    const { title, description, canonical, type, siteId } = this.props;
+    const { title, description, canonical, type, siteId, isAmp } = this.props;
 
     return (
       <ThemeProvider theme={this.theme}>
@@ -79,7 +81,7 @@ class Theme extends Component {
             <script src="//ced.sascdn.com/tag/2506/smart.js" type="text/javascript" async />
           </Head>
           {type !== 'post' && <Header />}
-          <Menu />
+          {isAmp ? <AmpMenu /> : <Menu />}
           {['latest', 'category', 'tag', 'author'].includes(type) && <DynamicList />}
           {type === 'page' && <DynamicPage />}
           <Transition
@@ -89,7 +91,8 @@ class Theme extends Component {
             mountOnEnter
             unmountOnExit
           >
-            {status => <DynamicPost status={status} />}
+            {status =>
+              isAmp ? <DynamicAmpPost status={status} /> : <DynamicPost status={status} />}
           </Transition>
           <Share />
           <Cookies />
@@ -106,6 +109,7 @@ Theme.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   canonical: PropTypes.string.isRequired,
+  isAmp: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -115,6 +119,7 @@ const mapStateToProps = state => ({
   title: dep('connection', 'selectors', 'getTitle')(state),
   description: dep('connection', 'selectors', 'getDescription')(state),
   canonical: dep('connection', 'selectors', 'getCanonical')(state),
+  isAmp: dep('build', 'selectors', 'getAmp')(state),
 });
 
 export default connect(mapStateToProps)(Theme);
