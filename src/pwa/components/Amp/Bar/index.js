@@ -2,10 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import MenuButton from './MenuButton';
 import HomeButton from './HomeButton';
+import Logo from './Logo';
 
 const Bar = () => (
   <Container>
     <MenuButton />
+    <Logo />
     <HomeButton />
   </Container>
 );
@@ -23,7 +25,5 @@ const Container = styled.div`
   justify-content: space-between;
   color: ${({ theme }) => theme.color};
   background-color: ${({ theme }) => theme.bgColor};
-  transform: ${({ theme, isHidden }) => `translateY(-${isHidden ? theme.titleSize : 0})`};
-  transition: transform 0.3s ease;
   z-index: 70;
 `;

@@ -40,7 +40,4 @@ const SpinnerContainer = styled.div`
   height: 100vh;
 `;
 
-const Container = styled.div`
-  ${({ status }) => (status === 'exiting' ? 'display: none' : '')};
-  z-index: 60;
-`;
+const Container = styled.div`z-index: 60;`;
