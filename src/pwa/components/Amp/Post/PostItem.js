@@ -43,15 +43,11 @@ const Container = styled.div`
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.postLight};
   color: ${({ theme }) => theme.postDark};
-  height: 100vh;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  transition: padding-top 0.5s ease;
-  z-index: 0;
   position: relative;
 `;
 
 const InnerContainer = styled.div`
+  box-sizing: border-box;
   padding-top: ${({ theme }) => theme.titleSize};
   padding-bottom: ${({ theme }) => theme.shareBarHeight};
 `;

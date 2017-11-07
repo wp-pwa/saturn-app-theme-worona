@@ -6,14 +6,14 @@ import styled from 'styled-components';
 import Spinner from '../../../elements/Spinner';
 import PostItem from './PostItem';
 import Bar from '../Bar';
-import ShareBar from '../../ShareBar';
+import Share from '../Share';
 
 const Post = ({ post, isPostReady, isListReady }) =>
   isPostReady && isListReady ? (
     <Container>
       <Bar />
       <PostItem id={post.id} />
-      <ShareBar />
+      <Share />
     </Container>
   ) : (
     <SpinnerContainer>
@@ -40,4 +40,7 @@ const SpinnerContainer = styled.div`
   height: 100vh;
 `;
 
-const Container = styled.div`z-index: 60;`;
+const Container = styled.div`
+  box-sizing: border-box;
+  z-index: 0;
+`;
