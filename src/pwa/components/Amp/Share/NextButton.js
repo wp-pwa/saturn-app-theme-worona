@@ -54,5 +54,4 @@ const Container = styled.a`
 const Text = styled.span`
   text-transform: uppercase;
   padding-top: 1px;
-  padding-right: 2px;
 `;

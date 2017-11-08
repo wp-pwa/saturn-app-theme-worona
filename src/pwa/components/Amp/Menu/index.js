@@ -7,15 +7,30 @@ import Header from './Header';
 
 class Menu extends Component {
   static propTypes = {
+    siteId: PropTypes.string.isRequired,
     menuItems: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   };
 
-  static renderItems(item, index) {
-    const { label, url } = item;
+  constructor() {
+    super();
+
+    this.renderItems = this.renderItems.bind(this);
+  }
+
+  renderItems(item) {
+    const { siteId } = this.props;
+    const { type, label } = item;
+
+    let href = `/?siteId=${siteId}`;
+
+    if (type === 'category') href += `&cat=${item.category}`;
+    else if (type === 'tag') href += `&tag=${item.tag}`;
+    else if (type === 'page') href += `&page_id=${item.page}`;
+    else if (type === 'link') href = item.url;
 
     return (
-      <Item key={index}>
-        <Link href={url}>{label}</Link>
+      <Item key={item.label}>
+        <Link href={href}>{label}</Link>
       </Item>
     );
   }
@@ -25,7 +40,7 @@ class Menu extends Component {
       <amp-sidebar id="sidebar" layout="nodisplay" side="left">
         <Container>
           <Header />
-          <List>{this.props.menuItems.map(Menu.renderItems)}</List>
+          <List>{this.props.menuItems.map(this.renderItems)}</List>
         </Container>
       </amp-sidebar>
     );
@@ -33,6 +48,7 @@ class Menu extends Component {
 }
 
 const mapStateToProps = state => ({
+  siteId: dep('settings', 'selectors', 'getSiteId')(state),
   menuItems: dep('settings', 'selectorCreators', 'getSetting')('theme', 'menu')(state),
 });
 
