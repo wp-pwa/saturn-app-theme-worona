@@ -2,19 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
+import FacebookShare from './FacebookShare';
 import NextButton from './NextButton';
 import * as selectors from '../../../selectors';
 
 const Share = ({ title, link }) => (
   <Container>
     <InnerContainer>
-      <amp-social-share
-        height="56"
-        width="56"
-        type="facebook"
-        data-param-app_id={''}
-        data-param-href={link}
-      />
+      <FacebookShare u={link} title={title} />
       <amp-social-share
         type="twitter"
         height="56"

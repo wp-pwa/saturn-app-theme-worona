@@ -11,20 +11,20 @@ const NextButton = () => (
 
 export default NextButton;
 
-const Container = styled.div`
+const Container = styled.a`
   box-sizing: border-box;
   height: 56px;
   margin: 0;
   padding: 0;
   padding-left: 10px;
-  background: #ccc;
+  background: ${({ theme }) => theme.bgColor};
   font-weight: 600;
   display: flex;
   justify-content: center;
   align-items: center;
   user-select: none;
   flex-grow: 1;
-  color: #333;
+  color: ${({ theme }) => theme.color};
 
   &:focus {
     outline: none;
@@ -34,5 +34,5 @@ const Container = styled.div`
 const Text = styled.span`
   text-transform: uppercase;
   padding-top: 1px;
-  padding-right: 5px;
+  padding-right: 2px;
 `;

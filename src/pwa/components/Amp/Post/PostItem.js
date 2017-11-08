@@ -12,12 +12,12 @@ import MorePosts from '../../MorePosts';
 import MainFooter from '../../Footer';
 import * as selectorCreators from '../../../selectorCreators';
 
-const PostItem = ({ id, media, slide }) => (
+const PostItem = ({ id, media }) => (
   <Container>
     <InnerContainer>
       <Media id={media} lazy height="55vh" width="100%" />
       <Header id={id} active />
-      <Content id={id} type={'post'} slide={slide} />
+      <Content id={id} type={'post'} />
       <TagList id={id} />
       <Comments id={id} active />
       <MorePosts currentPost={id} onlyFollowing />
@@ -30,7 +30,6 @@ const PostItem = ({ id, media, slide }) => (
 PostItem.propTypes = {
   id: PropTypes.number.isRequired,
   media: PropTypes.number.isRequired,
-  slide: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = (state, { id }) => ({
