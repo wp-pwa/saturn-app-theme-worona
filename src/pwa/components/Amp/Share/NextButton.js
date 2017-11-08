@@ -1,15 +1,34 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
+import { dep } from 'worona-deps';
 import IconNext from 'react-icons/lib/md/navigate-next';
 
-const NextButton = () => (
-  <Container>
-    <Text>{'Siguiente'}</Text>
-    <IconNext size={33} />
-  </Container>
-);
+const NextButton = ({ postList, siteId, id }) => {
+  const href = `/?siteId=${siteId}&p=${postList[postList.indexOf(id) + 1]}`;
 
-export default NextButton;
+  return (
+    <Container href={href}>
+      <Text>{'Siguiente'}</Text>
+      <IconNext size={33} />
+    </Container>
+  );
+};
+
+NextButton.propTypes = {
+  postList: PropTypes.arrayOf(PropTypes.number).isRequired,
+  siteId: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
+};
+
+const mapStateToProps = state => ({
+  postList: dep('connection', 'selectorCreators', 'getListResults')('currentList')(state),
+  siteId: dep('settings', 'selectors', 'getSiteId')(state),
+  id: dep('router', 'selectors', 'getId')(state),
+});
+
+export default connect(mapStateToProps)(NextButton);
 
 const Container = styled.a`
   box-sizing: border-box;
@@ -24,10 +43,11 @@ const Container = styled.a`
   align-items: center;
   user-select: none;
   flex-grow: 1;
-  color: ${({ theme }) => theme.color};
+  text-decoration: none;
 
-  &:focus {
-    outline: none;
+  &,
+  &:visited {
+    color: ${({ theme }) => theme.color};
   }
 `;
 
