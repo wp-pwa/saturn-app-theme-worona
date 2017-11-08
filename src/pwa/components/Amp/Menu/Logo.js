@@ -6,12 +6,6 @@ import { dep } from 'worona-deps';
 
 const MenuLogo = ({ title, logoUrl }) => {
   const widths = [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000];
-  const sizes = widths
-    .map(
-      (width, index, array) =>
-        index < array.length - 1 ? `(max-width: ${width}px) ${width}px` : `${width}px`,
-    )
-    .join(', ');
   const srcset = widths.map(width => `${logoUrl}?scale.width=${width}px ${width}w`).join(', ');
 
   return (
@@ -21,10 +15,10 @@ const MenuLogo = ({ title, logoUrl }) => {
           <amp-img
             alt={title}
             src={logoUrl}
-            sizes={sizes}
+            height={1}
+            width={1}
             srcSet={srcset}
-            height="40"
-            layout="fixed-height"
+            layout="responsive"
           />
         ) : (
           <span>{title}</span>
@@ -69,6 +63,12 @@ const InnerContainer = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+
+  amp-img,
+  img {
+    height: 100%;
+    width: 100%;
+  }
 
   img {
     object-fit: contain;
