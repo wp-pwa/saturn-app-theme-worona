@@ -23,7 +23,7 @@ export default {
         height,
         offset: 400,
         throttle: 50,
-        imgProps: filter(attributes),
+        videoProps: filter(attributes) || {},
       },
       children: [{ ...rest, attributes: { ...attributes, 'data-lazy': true } }],
     };

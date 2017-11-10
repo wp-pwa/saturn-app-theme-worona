@@ -6,13 +6,13 @@ import LazyLoad from 'react-lazy-load';
 import IconVideo from 'react-icons/lib/md/ondemand-video';
 import styled from 'styled-components';
 
-const LazyVideo = ({ children, width, height, isAmp, videoProps }) => (
+const LazyYoutube = ({ children, width, height, isAmp, youtubeId }) => (
   <Container height={height} width={width}>
     <Icon>
       <IconVideo size={40} />
     </Icon>
-    {isAmp ? (
-      <amp-video width={1} height={1} layout="responsive" {...videoProps} />
+    {isAmp && youtubeId ? (
+      <amp-youtube width={1} height={1} layout="responsive" data-videoid={youtubeId} />
     ) : (
       <StyledLazyLoad offsetVertical={500} throttle={50}>
         {children}
@@ -21,19 +21,19 @@ const LazyVideo = ({ children, width, height, isAmp, videoProps }) => (
   </Container>
 );
 
-LazyVideo.propTypes = {
+LazyYoutube.propTypes = {
   children: PropTypes.shape({}).isRequired,
   width: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
+  youtubeId: PropTypes.string.isRequired,
   isAmp: PropTypes.bool.isRequired,
-  videoProps: PropTypes.shape({}).isRequired,
 };
 
 const mapStateToProps = state => ({
   isAmp: dep('build', 'selectors', 'getAmp')(state),
 });
 
-export default connect(mapStateToProps)(LazyVideo);
+export default connect(mapStateToProps)(LazyYoutube);
 
 const Container = styled.div`
   position: relative;
@@ -45,8 +45,8 @@ const Container = styled.div`
   align-items: center;
   margin: 15px 0;
 
-  amp-video,
-  video,
+  amp-youtube,
+  iframe {
     width: ${props => props.width};
     height: ${props => props.height};
   }
