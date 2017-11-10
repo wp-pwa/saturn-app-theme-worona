@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { dep } from 'worona-deps';
 import LazyLoad from 'react-lazy-load';
 import IconTwitter from 'react-icons/lib/fa/twitter';
 import styled from 'styled-components';
@@ -41,7 +43,7 @@ class LazyTweet extends Component {
   }
 
   render() {
-    const { children, width, height } = this.props;
+    const { children, width, height, isAmp, tweetId } = this.props;
 
     return (
       <Container
@@ -56,13 +58,17 @@ class LazyTweet extends Component {
             <IconTwitter size={40} />
           </Icon>
         )}
-        <StyledLazyLoad
-          offsetVertical={700}
-          throttle={50}
-          onContentVisible={this.handleContentVisible}
-        >
-          {children}
-        </StyledLazyLoad>
+        {isAmp ? (
+          <amp-twitter width={1} height={1} layout="responsive" data-tweetid={tweetId} />
+        ) : (
+          <StyledLazyLoad
+            offsetVertical={700}
+            throttle={50}
+            onContentVisible={this.handleContentVisible}
+          >
+            {children}
+          </StyledLazyLoad>
+        )}
       </Container>
     );
   }
@@ -72,9 +78,15 @@ LazyTweet.propTypes = {
   children: PropTypes.shape({}).isRequired,
   width: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
+  isAmp: PropTypes.bool.isRequired,
+  tweetId: PropTypes.string.isRequired,
 };
 
-export default LazyTweet;
+const mapStateToProps = state => ({
+  isAmp: dep('build', 'selectors', 'getAmp')(state),
+});
+
+export default connect(mapStateToProps)(LazyTweet);
 
 const Container = styled.div`
   position: relative;
