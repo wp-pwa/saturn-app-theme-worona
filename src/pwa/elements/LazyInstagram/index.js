@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import LazyLoad from 'react-lazy-load';
+import { dep } from 'worona-deps';
 import IconInstagram from 'react-icons/lib/fa/instagram';
 import styled from 'styled-components';
 
@@ -43,7 +45,7 @@ class LazyInstagram extends Component {
   }
 
   render() {
-    const { children, width, height } = this.props;
+    const { children, width, height, isAmp, instagramId } = this.props;
 
     return (
       <Container
@@ -58,13 +60,23 @@ class LazyInstagram extends Component {
             <IconInstagram size={40} />
           </Icon>
         )}
-        <StyledLazyLoad
-          offsetVertical={700}
-          throttle={50}
-          onContentVisible={this.handleContentVisible}
-        >
-          {children}
-        </StyledLazyLoad>
+        {isAmp ? (
+          <amp-instagram
+            data-shortcode={instagramId}
+            data-captioned
+            width="1"
+            height="1"
+            layout="responsive"
+          />
+        ) : (
+          <StyledLazyLoad
+            offsetVertical={700}
+            throttle={50}
+            onContentVisible={this.handleContentVisible}
+          >
+            {children}
+          </StyledLazyLoad>
+        )}
       </Container>
     );
   }
@@ -74,9 +86,15 @@ LazyInstagram.propTypes = {
   children: PropTypes.shape({}).isRequired,
   width: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
+  isAmp: PropTypes.bool.isRequired,
+  instagramId: PropTypes.string.isRequired,
 };
 
-export default LazyInstagram;
+const mapStateToProps = state => ({
+  isAmp: dep('build', 'selectors', 'getAmp')(state),
+});
+
+export default connect(mapStateToProps)(LazyInstagram);
 
 const Container = styled.div`
   position: relative;
@@ -89,6 +107,11 @@ const Container = styled.div`
 
   blockquote {
     margin: 0;
+  }
+
+  amp-instagram {
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
   }
 `;
 
