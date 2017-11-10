@@ -9,8 +9,8 @@ export default {
     children[0].tagName === 'iframe' &&
     /youtube/.test(children[0].attributes.src) &&
     !attributes['data-lazy'],
-  converter: ({ children }) => {
-    const { attributes, ...rest } = children[0];
+  converter: element => {
+    const { attributes, ...rest } = element.children[0];
 
     let height;
     let width;
@@ -23,12 +23,15 @@ export default {
       width = '120px';
     }
 
+    const youtubeId = attributes.src.match(/\/embed\/([\d\w]+)/)[1] || '';
+
     return {
       type: 'Element',
       tagName: LazyVideo,
       attributes: {
         width,
         height,
+        youtubeId,
         offset: 400,
         throttle: 50,
         imgProps: filter(attributes),
