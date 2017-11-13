@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Transition from 'react-transition-group/Transition';
+import { dep } from 'worona-deps';
 import * as selectors from '../../selectors';
 import LoadUnload from '../LoadUnload';
 
@@ -32,43 +33,56 @@ const create = args => {
 
 const randomBetween = (min, max) => (Math.random() * (max - min)) + min; // prettier-ignore
 
-const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlide }) => {
+const Ad = ({ siteId, pageId, formatId, target, width, height, slide, activeSlide, isAmp }) => {
   const tagId = `ad${formatId}${slide || ''}`;
   const exit = randomBetween(2000, 6000);
 
   return (
-    <Container width={width} height={height}>
+    <Container styles={{ width, height }}>
       <IconContainer>
         <IconText>{'ad'}</IconText>
       </IconContainer>
-      <Transition
-        in={slide === activeSlide || slide === undefined}
-        timeout={{ exit }}
-        unmountOnExit
-        enter={false}
-      >
-        {status => {
-          if (status === 'entered' || status === 'exiting') {
-            return (
-              <StyledLoadUnload
-                once
-                width={width}
-                height={height}
-                topOffset={-2000}
-                bottomOffset={-2000}
-                onEnter={() => {
-                  setTimeout(() => {
-                    create({ siteId, pageId, formatId, target, width, height, tagId });
-                  });
-                }}
-              >
-                <InnerContainer id={tagId} width={width} height={height} />
-              </StyledLoadUnload>
-            );
-          }
-          return null;
-        }}
-      </Transition>
+      {isAmp ? (
+        <amp-ad
+          type="smartadserver"
+          data-site={siteId}
+          data-page={pageId}
+          data-format={formatId}
+          data-domain="https://www8.smartadserver.com"
+          data-target={target}
+          width={width}
+          height={height}
+        />
+      ) : (
+        <Transition
+          in={slide === activeSlide || slide === undefined}
+          timeout={{ exit }}
+          unmountOnExit
+          enter={false}
+        >
+          {status => {
+            if (status === 'entered' || status === 'exiting') {
+              return (
+                <StyledLoadUnload
+                  once
+                  width={width}
+                  height={height}
+                  topOffset={-2000}
+                  bottomOffset={-2000}
+                  onEnter={() => {
+                    setTimeout(() => {
+                      create({ siteId, pageId, formatId, target, width, height, tagId });
+                    });
+                  }}
+                >
+                  <InnerContainer id={tagId} width={width} height={height} />
+                </StyledLoadUnload>
+              );
+            }
+            return null;
+          }}
+        </Transition>
+      )}
     </Container>
   );
 };
@@ -79,6 +93,7 @@ Ad.propTypes = {
   formatId: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  isAmp: PropTypes.bool.isRequired,
   target: PropTypes.string,
   slide: PropTypes.number,
   activeSlide: PropTypes.number,
@@ -87,6 +102,7 @@ Ad.propTypes = {
 const mapStateToProps = state => ({
   target: selectors.ads.getCurrentTarget(state),
   activeSlide: selectors.post.getActiveSlide(state),
+  isAmp: dep('build', 'selectors', 'getAmp')(state),
 });
 
 export default connect(mapStateToProps)(Ad);
@@ -98,8 +114,8 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   max-width: 100%;
-  height: ${({ height }) => height}px;
-  width: ${({ width }) => width}px;
+  height: ${({ styles }) => styles.height}px;
+  width: ${({ styles }) => styles.width}px;
 
   * {
     max-width: 100%;
