@@ -8,7 +8,7 @@ import Content from '../../../elements/Content';
 import SeoWord from '../../../elements/SeoWord';
 import TagList from '../../Post/TagList';
 import Comments from '../../Comments';
-import MorePosts from '../../MorePosts';
+// import Carousel from '../Carousel';
 import MainFooter from '../../Footer';
 import * as selectorCreators from '../../../selectorCreators';
 
@@ -20,7 +20,7 @@ const PostItem = ({ id, media }) => (
       <Content id={id} type={'post'} />
       <TagList id={id} />
       <Comments id={id} active />
-      <MorePosts currentPost={id} onlyFollowing />
+      {/* <Carousel /> */}
       <SeoWord />
       <MainFooter />
     </InnerContainer>
