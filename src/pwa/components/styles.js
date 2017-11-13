@@ -12,6 +12,7 @@ export default injectGlobal`
 
   body {
     background-color: #FFF;
+    text-size-adjust: 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {

@@ -35,7 +35,7 @@ class Media extends React.Component {
 
     if (isAmp)
       return (
-        <Container content={content} height={height} width={width}>
+        <Container content={content} styles={{ height, width }}>
           <Icon>
             <IconImage size={40} />
           </Icon>
@@ -44,7 +44,7 @@ class Media extends React.Component {
       );
 
     return (
-      <Container content={content} height={height} width={width}>
+      <Container content={content} styles={{ height, width }}>
         <Icon>
           <IconImage size={40} />
         </Icon>
@@ -92,8 +92,8 @@ const mapStateToProps = (
 export default connect(mapStateToProps)(Media);
 
 const Container = styled.div`
-  width: ${props => props.width};
-  height: ${props => props.height};
+  width: ${({ styles }) => styles.width};
+  height: ${({ styles }) => styles.height};
   position: relative;
 
   amp-img,
