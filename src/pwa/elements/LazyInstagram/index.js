@@ -49,8 +49,7 @@ class LazyInstagram extends Component {
 
     return (
       <Container
-        height={height}
-        width={width}
+        styles={{ height, width }}
         innerRef={node => {
           this.ref = node;
         }}
@@ -99,8 +98,8 @@ export default connect(mapStateToProps)(LazyInstagram);
 const Container = styled.div`
   position: relative;
   box-sizing: border-box;
-  width: ${props => props.width};
-  height: ${props => props.height};
+  width: ${({ styles }) => styles.width};
+  height: ${({ styles }) => styles.height};
   min-height: 170px;
   padding: 0 15px;
   margin: 15px 0;
