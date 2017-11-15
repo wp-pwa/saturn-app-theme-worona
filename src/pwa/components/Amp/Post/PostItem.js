@@ -8,7 +8,7 @@ import Content from '../../../elements/Content';
 import SeoWord from '../../../elements/SeoWord';
 import Tags from '../Tags';
 import Comments from '../../Comments';
-// import Carousel from '../Carousel';
+import Carousel from '../Carousel';
 import MainFooter from '../../Footer';
 import * as selectorCreators from '../../../selectorCreators';
 
@@ -20,7 +20,7 @@ const PostItem = ({ id, media }) => (
       <Content id={id} type={'post'} />
       <Tags id={id} />
       <Comments id={id} active />
-      {/* <Carousel /> */}
+      <Carousel id={id} title={'Últimos artículos'} size="medium" listName={'currentList'} />
       <SeoWord />
       <MainFooter />
     </InnerContainer>

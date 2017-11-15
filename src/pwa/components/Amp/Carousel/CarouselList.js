@@ -11,7 +11,7 @@ class CarouselList extends Component {
   render() {
     const { size, list } = this.props;
 
-    return <Container size={size}>{list.map(CarouselList.renderItems)}</Container>;
+    return <amp-carousel size={size}>{list.map(CarouselList.renderItems)}</amp-carousel>;
   }
 }
 

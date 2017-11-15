@@ -3,52 +3,45 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { dep } from 'worona-deps';
-import LazyLoad from 'react-lazy-load';
-import CarouselList from './CarouselList';
+import CarouselItem from './CarouselItem';
 
 class Carousel extends Component {
   componentWillMount() {
-    const { listName, isReady, newPostsListRequested, params } = this.props;
-    const plurals = dep('connection', 'constants', 'wpTypesSingularToPlural');
+    const { listName, isReady, newPostsListRequested } = this.props;
 
-    if (!isReady)
-      newPostsListRequested({ name: listName, params: { [plurals[params.type]]: params.id } });
+    if (!isReady) newPostsListRequested({ name: listName });
   }
 
   render() {
-    const { title, size, list, isReady } = this.props;
+    const { id, title, size, list, isReady, siteId } = this.props;
+    const filteredList = list.filter(postId => postId !== id).slice(0, 5);
 
     return isReady && list && list.length ? (
-      <LazyLoad offsetVertical={300}>
-        <Container>
-          <Title>{title}</Title>
-          <CarouselList list={list} size={size} />
-        </Container>
-      </LazyLoad>
+      <Container size={size}>
+        <Title>{title}</Title>
+        <amp-carousel type="carousel" height={1} width={1} layout="responsive">
+          {filteredList.map(postId => <CarouselItem key={postId} id={postId} siteId={siteId} />)}
+        </amp-carousel>
+      </Container>
     ) : null;
   }
 }
 
 Carousel.propTypes = {
+  id: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   size: PropTypes.string.isRequired,
   listName: PropTypes.string.isRequired,
-  params: PropTypes.shape({
-    type: PropTypes.string,
-    id: PropTypes.number,
-    exclude: PropTypes.number,
-    excludeTo: PropTypes.number,
-    excludeFrom: PropTypes.number,
-    limit: PropTypes.number,
-  }).isRequired,
   isReady: PropTypes.bool.isRequired,
   list: PropTypes.arrayOf(PropTypes.number).isRequired,
+  siteId: PropTypes.string.isRequired,
   newPostsListRequested: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state, { listName, params }) => ({
-  isReady: dep('connection', 'selectorCreators', 'isListReady')(listName, params)(state),
-  list: dep('connection', 'selectorCreators', 'getListResults')(listName, params)(state),
+const mapStateToProps = (state, { listName }) => ({
+  isReady: dep('connection', 'selectorCreators', 'isListReady')(listName)(state),
+  list: dep('connection', 'selectorCreators', 'getListResults')(listName)(state),
+  siteId: dep('settings', 'selectors', 'getSiteId')(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -63,6 +56,38 @@ const Container = styled.div`
   margin: 0;
   padding: 0;
   margin-bottom: 30px;
+
+  amp-carousel {
+    height: ${({ size }) => {
+      if (size === 'small') return 130;
+      if (size === 'medium') return 220;
+      if (size === 'large') return 270;
+      return 220;
+    }}px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: left;
+    align-items: stretch;
+    list-style: none;
+    margin: 0 !important;
+    padding: 0;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .amp-carousel-button {
+      display: none;
+    }
+
+    .i-amphtml-scrollable-carousel-container {
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
 `;
 
 const Title = styled.h4`
