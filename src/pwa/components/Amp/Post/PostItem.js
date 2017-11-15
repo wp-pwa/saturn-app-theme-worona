@@ -6,7 +6,7 @@ import Media from '../../Media';
 import Header from '../../Post/Header';
 import Content from '../../../elements/Content';
 import SeoWord from '../../../elements/SeoWord';
-import TagList from '../../Post/TagList';
+import Tags from '../Tags';
 import Comments from '../../Comments';
 // import Carousel from '../Carousel';
 import MainFooter from '../../Footer';
@@ -18,7 +18,7 @@ const PostItem = ({ id, media }) => (
       <Media id={media} lazy height="55vh" width="100%" />
       <Header id={id} active />
       <Content id={id} type={'post'} />
-      <TagList id={id} />
+      <Tags id={id} />
       <Comments id={id} active />
       {/* <Carousel /> */}
       <SeoWord />
