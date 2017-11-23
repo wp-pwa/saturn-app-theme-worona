@@ -40,4 +40,5 @@ const Container = styled.div`
   margin: 0 10px;
   margin-top: 20px;
   border-top: 1px solid #ddd;
+  overflow-x: hidden;
 `;

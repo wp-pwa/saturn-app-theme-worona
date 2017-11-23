@@ -20,16 +20,19 @@ const create = args => {
   }
 
   const { adUnitPath, width, height, tagId, opt_clickUrl } = args;
+
   let slot;
 
   googletag.cmd.push(() => {
     slot = googletag.pubads().display(adUnitPath, [width, height], tagId, opt_clickUrl);
+    console.log('slot:', slot);
   });
 
-  return () => googletag.cmd.push(() => {
-    console.log('DESTROYED');
-    googletag.destroySlots([slot]);
-  });
+  return () =>
+    googletag.cmd.push(() => {
+      console.log('DESTROYED');
+      googletag.destroySlots([slot]);
+    });
 };
 
 export default { create };

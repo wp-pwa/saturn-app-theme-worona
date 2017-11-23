@@ -1,5 +1,5 @@
 /* global window */
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
@@ -13,63 +13,73 @@ import adsense from './adsense';
 const adSystems = {
   smartads,
   adsense,
-}
+};
 
 const randomBetween = (min, max) => (Math.random() * (max - min)) + min; // prettier-ignore
 
-const Ad = ({ type = 'smartads', width, height, slide, activeSlide, ...params }) => {
-  const exit = randomBetween(2000, 6000);
-  const { formatId, adUnitPath } = params;
-  const tagId = `ad${formatId || adUnitPath}${slide !== undefined ? slide : ''}`;
-  let remover;
-  return (
-    <Container width={width} height={height}>
-      <IconContainer>
-        <IconText>{'ad'}</IconText>
-      </IconContainer>
-      <Transition
-        in={slide === activeSlide || slide === undefined}
-        timeout={{ exit }}
-        unmountOnExit
-        enter={false}
-        onExiting={() => remover && remover()}
-      >
-        {status => {
-          if (status === 'entered' || status === 'exiting') {
-            return (
-              <StyledLoadUnload
-                once
-                width={width}
-                height={height}
-                topOffset={-2000}
-                bottomOffset={-2000}
-                onEnter={() => {
-                  setTimeout(() => {
-                    remover = adSystems[type].create({ ...params, width, height, tagId });
-                  });
-                }}
-              >
-                <InnerContainer id={tagId} width={width} height={height} />
-              </StyledLoadUnload>
-            );
-          }
-          return null;
-        }}
-      </Transition>
-    </Container>
-  );
-};
+class Ad extends Component {
+  static propTypes = {
+    siteId: PropTypes.number.isRequired,
+    pageId: PropTypes.number.isRequired,
+    formatId: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+    target: PropTypes.string,
+    slide: PropTypes.number,
+    activeSlide: PropTypes.number,
+    type: PropTypes.string,
+  };
 
-Ad.propTypes = {
-  siteId: PropTypes.number.isRequired,
-  pageId: PropTypes.number.isRequired,
-  formatId: PropTypes.number.isRequired,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  target: PropTypes.string,
-  slide: PropTypes.number,
-  activeSlide: PropTypes.number,
-};
+  static defaultProps = {
+    target: null,
+    slide: null,
+    activeSlide: null,
+    type: 'smartads',
+  };
+
+  render() {
+    const { type, width, height, slide, activeSlide, formatId, adUnitPath, ...params } = this.props;
+    const exit = randomBetween(2000, 6000);
+    const tagId = `ad${formatId || adUnitPath}${slide !== undefined ? slide : ''}`;
+    let remover;
+    return (
+      <Container width={width} height={height}>
+        <IconContainer>
+          <IconText>{'ad'}</IconText>
+        </IconContainer>
+        <Transition
+          in={slide === activeSlide || slide === undefined}
+          timeout={{ exit }}
+          unmountOnExit
+          enter={false}
+          onExiting={() => remover && remover()}
+        >
+          {status => {
+            if (status === 'entered' || status === 'exiting') {
+              return (
+                <StyledLoadUnload
+                  once
+                  width={width}
+                  height={height}
+                  topOffset={-2000}
+                  bottomOffset={-2000}
+                  onEnter={() => {
+                    setTimeout(() => {
+                      remover = adSystems[type].create({ ...params, width, height, tagId });
+                    });
+                  }}
+                >
+                  <InnerContainer id={tagId} width={width} height={height} />
+                </StyledLoadUnload>
+              );
+            }
+            return null;
+          }}
+        </Transition>
+      </Container>
+    );
+  }
+}
 
 const mapStateToProps = state => ({
   target: selectors.ads.getCurrentTarget(state),
